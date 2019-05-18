@@ -6,7 +6,8 @@ var app = new Vue({
     },
 });
 
-axios.get('/static/data/users.json')
+// APIサーバーを叩く
+axios.get('/api/')
 .then(function(res) {
     app.title = res.data.admin.title;
     app.content = res.data.admin.content;

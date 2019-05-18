@@ -1,20 +1,21 @@
-from flask import Flask, request
-from pprint import pprint
+from api.frasco import Frasco
+from urllib.request import Request, urlopen
+import json
 
-# HTMLファイル読み込み(描画)
-def render(filename):
-    with open(f'html/{filename}.html', 'rb') as f:
-        return f.read()
-
-# Flaskアプリケーション
-app = Flask(__name__)
+# Frascoアプリケーション
+app = Frasco(__name__)
 
 # ルートパス: index
-@app.route('/', methods=['GET'])
+@app.get('/', 'html')
 def index():
-    pprint(request.environ)
-    return render('index') # html/index.html描画
+    return 'html/index' # html/index.html描画
 
-# Flaskサーバー実行(localhost:8000)
+# APIサーバーを叩くためのルート
+@app.get('/api/', 'json')
+def api():
+    with urlopen(Request('http://localhost:1000')) as res:
+        return json.load(res)
+
+# Frascoサーバー実行(localhost:8000)
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
