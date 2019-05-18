@@ -14,7 +14,7 @@ gulp.task('browser-sync', function(done) {
 
 // `watch` task: Watch changing of files, and reload browser-sync
 gulp.task("watch", function (done) {
-    gulp.watch(['./html/**/*']).on("change", reload);
+    gulp.watch(['./html/**/*', './static/**/*']).on("change", reload);
     // This task will be running forever, not be finished
     // done();
 });
