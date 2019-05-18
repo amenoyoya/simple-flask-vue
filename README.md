@@ -10,38 +10,64 @@
 
 ***
 
-### Installation of Gulp
+### Installation of nodejs modules
 ```bash
-$ yarn add -D gulp
+$ yarn add -D gulp browser-sync npm-run-all
 ```
 
-#### Setting of gulpfile.js
+### Setting up `gulpfile.js`
 ```javascript
-const gulp = require('gulp');
-const exec = require('child_process').exec;
+var gulp          = require("gulp");
+var browserSync   = require('browser-sync').create();
+var reload        = browserSync.reload;
 
-// `webserver` task: Flask server
-gulp.task('webserver', function(done) {
-    // Flask will run in localhost:8000
-    exec('python server.py', function(err, stdout, stderr) {
-        console.log(stdout);
-        console.error(stderr);
+// `browser-sync` task: Refresh the browser Automatically
+gulp.task('browser-sync', function(done) {
+    browserSync.init({
+        // Set target host for refreshing: localhost:8000(Flask Server)
+        proxy: "localhost:8000"
     });
     // This task will be running forever, not be finished
     // done();
 });
 
+// `watch` task: Watch changing of files, and reload browser-sync
+gulp.task("watch", function (done) {
+    gulp.watch(['./html/**/*']).on("change", reload);
+    // This task will be running forever, not be finished
+    // done();
+});
+
 // `default` task: gulp command will execute this task
-//   => execute `webserver` task
-//   if you want to execute multiple tasks: use gulp.series('task1', 'task2', ...)
-//   if you want to execute parallel tasks: use gulp.parallel('task1', 'task2', ...)
-gulp.task('default', gulp.task('webserver'));
+//   => execute `browser-sync` and `watch` tasks parallelly
+//   if you want to execute one task: use gulp.task('task')
+//   if you want to execute multiple tasks serially: use gulp.series('task1', 'task2', ...)
+gulp.task("default", gulp.parallel("browser-sync", "watch"));
+```
+
+
+### Setting up `package.json`
+Settings for executing two tasks parallelly.
+- `gulp` task (for Auto refreshing the browser: `browser-sync` task)
+- `python server.py` task (for Flask webserver task)
+
+Add `scripts` setting to `package.json`.
+```json
+{
+    ...
+    "scripts": {
+        "server": "python server.py",
+        "sync": "gulp",
+        "dev": "npm-run-all --parallel server sync"
+    }
+}
 ```
 
 ***
 
 ## How to execute
 ```bash
-$ yarn gulp
+$ yarn dev
 # => Flask server will run in localhost:8000
+# => Gulp task will run: Browser-sync
 ```
