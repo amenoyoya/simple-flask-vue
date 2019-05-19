@@ -8,8 +8,16 @@
         <section class="section">
             <div class="container" id="app">
                 <div class="columns">
+                    <div class="column is-one-fifth">
+                        <ul class="list">
+                            <li v-for="usr in users">
+                                <a class="button is-link is-fullwidth" @click.prevent="switch_user(usr)">{{ usr }}</a>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="column">
                         <h1 class="title">{{ title }}</h1>
+                        <p class="subtitle">{{ user }}</p>
                         <div class="is-full">{{ content }}</div>
                     </div>
                 </div>
