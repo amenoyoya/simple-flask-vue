@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang=ja>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/static/css/bulma.css">
+    </head>
+    <body>
+        <section class="section">
+            <div class="container" id="app">
+                <div class="columns">
+                    <div class="column">
+                        <h1 class="title">ログイン</h1>
+                        <form id="login-form">
+                            <div class="field">
+                                <label class="label" for="username">UserName</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="username" placeholder="UserName">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label" for="password">Password</label>
+                                <div class="control">
+                                    <input class="input" type="password" name="password" placeholder="Password">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <input type="submit" class="button is-link" value="Login" @click.prevent="login">
+                                </div>
+                            </div>
+                        </form>
+                        <div v-html="message"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <script src="/static/js/vue.min.js"></script>
+        <script src="/static/js/axios.min.js"></script>
+        <script>
+            var app = new Vue({
+            el: '#app',
+            data: {
+                message: ''
+            },
+            methods: {
+                login(){
+                    // APIサーバーを叩いて、ログイン
+                    axios.post('/api/login', new FormData(document.getElementById('login-form')))
+                    .then(function(res) {
+                        app.message = '<div class="notification is-success"><p>"' + res.data.user + '"としてログイン成功しました</p></div>';
+                    })
+                    .catch(function(err) {
+                        app.message = '<div class="notification is-warning"><p>ログインできませんでした</p><p>ユーザー名かパスワードが違います</p></div>';
+                    });
+                }
+            }
+        });
+        </script>
+    </body>
+</html>
