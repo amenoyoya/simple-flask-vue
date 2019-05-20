@@ -4,25 +4,34 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="/static/css/bulma.css">
     </head>
-    <body>
-        <section class="section">
-            <div class="container" id="app">
-                <div class="columns">
-                    <div class="column is-one-fifth">
-                        <ul class="list">
-                            <li v-for="usr in users">
-                                <a class="button is-link is-fullwidth" @click.prevent="switch_user(usr)">{{ usr }}</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="column">
-                        <h1 class="title">{{ title }}</h1>
-                        <p class="subtitle">{{ user }}</p>
-                        <div class="is-full">{{ content }}</div>
+    <body class="has-navbar-fixed-top">
+        <div id="app">
+            <nav class="navbar is-black is-fixed-top" role="navigation" aria-label="main navigation">
+                <div class="navbar-menu">
+                    <div class="navbar-end" v-if="user">
+                        <p class="navbar-item">{{ user }} としてログオン中</p>
+                        <a class="navbar-item has-background-grey" @click.prevent="logout">ログアウト</a>
                     </div>
                 </div>
-            </div>
-        </section>
+            </nav>
+            <section class="section">
+                <div class="container">
+                    <div class="columns">
+                        <div class="column is-one-fifth">
+                            <ul class="list">
+                                <li v-for="usr in users">
+                                    <a class="button is-link is-fullwidth" @click.prevent="switch_user(usr)">{{ usr }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="column">
+                            <h1 class="title">{{ title }}</h1>
+                            <div class="is-full" v-html="content"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
         
         <script src="/static/js/vue.min.js"></script>
         <script src="/static/js/axios.min.js"></script>
@@ -36,12 +45,13 @@
                 content: ''
             },
             methods: {
-                switch_user(user){
+                switch_user(user) {
                     // APIサーバーを叩いて、ユーザー情報を取得
                     axios.get('/api/users')
                     .then(function(res) {
-                        app.users = Object.keys(res.data);
-                        data = res.data[user];
+                        app.users = Object.keys(res.data.users);
+                        user = user? user: res.data.user;
+                        data = res.data.users[user];
                         if (data) {
                             app.user = user;
                             app.title = data.title;
@@ -49,13 +59,27 @@
                         }
                     })
                     .catch(function(err) {
-                        console.log(err);
+                        app.title = err.response.status + ' ' + err.response.statusText;
+                        app.content = '<div class="notification is-danger"><p>' + err.response.data + '</p></div>';
+                        setTimeout(function() { // 1.5秒後ログインページにリダイレクト
+                            location.href = '/login';
+                        }, 1500);
+                    });
+                },
+                // ログアウトメソッド
+                logout() {
+                    axios.get('/api/logout')
+                    .then(function(res) {
+                        app.content = '<div class="notification is-info"><p>' + res.data + '</p></div>';
+                        setTimeout(function() { // 1.5秒後ログインページにリダイレクト
+                            location.href = '/login';
+                        }, 1500);
                     });
                 }
             }
         });
 
-        app.switch_user('admin');
+        app.switch_user();
         </script>
     </body>
 </html>

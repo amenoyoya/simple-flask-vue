@@ -1,5 +1,4 @@
-from api.frasco import Frasco, Response
-from flask import request
+from frasco import Frasco, Response
 import json
 
 # 認証処理用ユーザークラス
@@ -9,8 +8,12 @@ class User:
 
     @staticmethod
     def auth(data):
-        if data.get('username') == 'admin' and data.get('password') == 'pass':
-            return User('admin')
+        with open('./data/users.json', 'rb') as f:
+            users = json.load(f)
+        # users.jsonに定義されているユーザーならログイン
+        name = data.get('username')
+        if name in users and data.get('password') == 'pass':
+            return User(name)
 
     @staticmethod
     def save(user):
@@ -26,9 +29,9 @@ app = Frasco(__name__, User=User)
 
 # HTML
 @app.get('/')
-@app.require_login(Response.redirect('/login'))
+#@app.secret(Response.redirect('/login'))
 def index():
-    return Response.html('html/index') # html/index.html描画
+    return Response.html('html/index')
 
 @app.get('/login')
 def login():
@@ -36,11 +39,15 @@ def login():
 
 # API
 @app.get('/api/users')
+@app.secret(Response.text('ログインしてください', 401))
 def get_users():
-    with open('./api/users.json', 'rb') as f:
-        return Response.json(json.load(f))
+    with open('./data/users.json', 'rb') as f:
+        return Response.json({
+            'user': app.current_user.name,
+            'users': json.load(f)
+        })
 
-@app.auth('/api/login', '/api/logout', Response.redirect('/'))
+@app.auth('/api/login', '/api/logout', Response.text('ログアウトしました'))
 def auth(user):
     if user:
         return Response.json({'user': user.name})

@@ -106,13 +106,13 @@ class Frasco(Flask):
         ''' delete method routing decorator '''
         return self.route(route, methods=['DELETE'])
 
-    def require_login(self, err_response):
+    def secret(self, err_response):
         ''' decorator for authentication
         params:
             err_response (tuple): response for the case of unauthorized
         example:
             @frasco.post('/member')
-            @frasco.require_login(Response.redirect('/login'))
+            @frasco.secret(Response.redirect('/login'))
             def member_page():
                 return Response.text('Here is a secret page')
         '''
@@ -159,6 +159,7 @@ class Frasco(Flask):
         
         @self.get(logout_route)
         def logout():
+            session.pop('auth', None) # セッション削除
             return logout_response
         
         return _wrapper
