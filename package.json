@@ -1,4 +1,7 @@
 {
+  "resolutions": {
+    "axios": "0.19.0"
+  },
   "devDependencies": {
     "browser-sync": "^2.26.5",
     "gulp": "^4.0.2",
@@ -8,5 +11,8 @@
     "server": "python server.py",
     "sync": "gulp",
     "dev": "npm-run-all --parallel server sync"
+  },
+  "dependencies": {
+    "yarn": "^1.16.0"
   }
 }
