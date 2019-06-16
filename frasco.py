@@ -1,5 +1,10 @@
+# encoding: utf-8
 '''
 Flask Webserver Wrapper
+
+Copyright (C) 2019 yoya@amenoyoya. All rights reserved.
+GitHub: https://github.com/amenoyoya/frontend-template
+License: MIT License
 '''
 import flask, os
 from flask import Flask, render_template, jsonify, session, request
