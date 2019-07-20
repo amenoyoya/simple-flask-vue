@@ -1,0 +1,3 @@
+[submodule "api/pylib"]
+	path = api/pylib
+	url = https://github.com/amenoyoya/pylib.git
