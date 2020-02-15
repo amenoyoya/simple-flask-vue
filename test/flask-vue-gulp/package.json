@@ -13,6 +13,6 @@
     "dev": "npm-run-all --parallel server sync"
   },
   "dependencies": {
-    "yarn": "^1.17.3"
+    "yarn": "^1.22.0"
   }
 }
